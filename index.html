@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="pt-MZ">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1"
+    />
+    <title>SICO | Sistema de Intervenção Comunitária</title>
+    <link rel="icon" type="image/svg+xml" href="assets/logo/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- ==================== APP SHELL ==================== -->
+    <div class="app">
+      <!-- ===== HEADER ===== -->
+      <header class="app-header" id="appHeader">
+        <button class="icon-btn" id="menuBtn" aria-label="Abrir menu">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <path d="M3 6h18" />
+            <path d="M3 12h18" />
+            <path d="M3 18h18" />
+          </svg>
+        </button>
+
+        <div class="header-logo">
+          <a href="#" class="brand" id="brandHome" aria-label="SICO — início">
+            <span class="brand-name">SICO</span>
+            <span class="brand-tagline">Sistema de Intervenção Comunitária</span>
+          </a>
+        </div>
+
+        <nav
+          class="desktop-nav"
+          id="desktopNav"
+          aria-label="Navegação principal"
+        >
+          <button class="desktop-nav-item active" data-view="home">
+            Início
+          </button>
+          <button class="desktop-nav-item" data-view="map">Mapa</button>
+          <button class="desktop-nav-item" data-view="reports">Relatos</button>
+          <button class="desktop-nav-item" data-view="profile">Perfil</button>
+        </nav>
+
+        <div class="header-actions">
+          <button class="icon-btn" id="notifBtn" aria-label="Notificações">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </svg>
+            <span class="notif-dot" id="notifDot" hidden></span>
+          </button>
+          <button
+            class="desktop-nav-item primary-cta"
+            type="button"
+            data-view="report"
+          >
+            Reportar
+          </button>
+        </div>
+      </header>
+
+      <!-- ===== MAIN VIEWS ===== -->
+      <main class="app-main" id="appMain">
+        <!-- ---------- HOME VIEW ---------- -->
+        <section class="view" id="view-home" data-view="home">
+          <div class="container">
+            <p class="greeting" id="greetingText">Olá, Abubacar</p>
+
+            <div class="hero-card">
+              <h1 class="hero-title">Intervenção comunitária ao alcance de todos.</h1>
+              <p class="hero-desc">
+                Viu um problema? Reporte em poucos passos.
+              </p>
+              <button
+                class="btn btn-primary btn-block"
+                type="button"
+                data-nav="report"
+              >
+                Reportar problema
+              </button>
+            </div>
+
+            <div class="section-block">
+              <h2 class="section-title">A sua actividade</h2>
+              <div class="metrics-grid" id="activityMetrics"></div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-header-row">
+                <h2 class="section-title">Problemas recentes</h2>
+                <button class="link-btn" data-nav="reports">Ver todos</button>
+              </div>
+              <div class="report-list" id="recentReports"></div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-header-row">
+                <h2 class="section-title">Problemas perto de si</h2>
+              </div>
+              <div class="map-preview-card">
+                <div id="mapPreview" class="map-preview"></div>
+                <button class="btn btn-secondary btn-block" data-nav="map">
+                  Ver mapa
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---------- MAP VIEW ---------- -->
+        <section class="view" id="view-map" data-view="map">
+          <div class="map-view-header">
+            <h1 class="page-title">Mapa</h1>
+            <button class="btn btn-secondary btn-sm" id="filterBtn">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                width="16"
+                height="16"
+              >
+                <path d="M4 6h16" />
+                <path d="M7 12h10" />
+                <path d="M10 18h4" />
+              </svg>
+              Filtrar
+            </button>
+          </div>
+          <div id="mapFull" class="map-full"></div>
+        </section>
+
+        <!-- ---------- REPORT FLOW VIEW ---------- -->
+        <section class="view" id="view-report" data-view="report">
+          <div class="container report-flow">
+            <div class="report-flow-header">
+              <button class="icon-btn" id="reportBackBtn" aria-label="Voltar">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <h1 class="page-title">Novo reporte</h1>
+            </div>
+
+            <div class="progress-steps" id="progressSteps">
+              <div class="progress-step active" data-step="1">
+                <span class="progress-num">1</span
+                ><span class="progress-label">Categoria</span>
+              </div>
+              <div class="progress-line"></div>
+              <div class="progress-step" data-step="2">
+                <span class="progress-num">2</span
+                ><span class="progress-label">Detalhes</span>
+              </div>
+              <div class="progress-line"></div>
+              <div class="progress-step" data-step="3">
+                <span class="progress-num">3</span
+                ><span class="progress-label">Confirmar</span>
+              </div>
+            </div>
+
+            <!-- STEP 1: CATEGORIA -->
+            <div class="report-step active" id="step-1">
+              <h2 class="step-title">Que problema encontrou?</h2>
+              <p class="step-desc">
+                Escolha a categoria que melhor descreve o problema.
+              </p>
+              <div class="category-grid" id="categoryGrid"></div>
+              <p class="field-error" id="categoryError" hidden>
+                Seleccione uma categoria.
+              </p>
+              <button
+                class="btn btn-primary btn-block"
+                type="button"
+                id="step1Continue"
+              >
+                Continuar
+              </button>
+            </div>
+
+            <!-- STEP 2: DETALHES -->
+            <div class="report-step" id="step-2">
+              <h2 class="step-title">Detalhes do problema</h2>
+
+              <div class="field-group">
+                <label class="field-label">Fotografia</label>
+                <div class="photo-upload" id="photoUpload">
+                  <div class="photo-grid" id="photoGrid"></div>
+                  <button class="photo-add-btn" id="photoAddBtn" type="button">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"
+                      />
+                      <circle cx="12" cy="13" r="4" />
+                    </svg>
+                    <span>Adicionar fotografia</span>
+                  </button>
+                  <input
+                    type="file"
+                    id="photoInput"
+                    accept="image/*"
+                    multiple
+                    hidden
+                  />
+                </div>
+                <p class="field-hint">Até 4 fotografias.</p>
+                <p class="field-error" id="photoError" hidden>
+                  Não foi possível carregar esta fotografia.
+                </p>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Localização</label>
+                <button
+                  class="btn btn-secondary btn-block"
+                  id="useLocationBtn"
+                  type="button"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    width="18"
+                    height="18"
+                  >
+                    <path
+                      d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"
+                    />
+                    <circle cx="12" cy="10" r="2.5" />
+                  </svg>
+                  Usar minha localização
+                </button>
+                <div class="location-result" id="locationResult" hidden>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    width="16"
+                    height="16"
+                  >
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  <span id="locationText"></span>
+                </div>
+                <p class="field-error" id="locationError" hidden>
+                  Indique a localização do problema.
+                </p>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" for="descriptionInput"
+                  >Descrição</label
+                >
+                <textarea
+                  class="field-textarea"
+                  id="descriptionInput"
+                  placeholder="Descreva brevemente o problema..."
+                  maxlength="280"
+                  rows="4"
+                ></textarea>
+                <p class="field-error" id="descriptionError" hidden>
+                  Descreva brevemente o problema.
+                </p>
+              </div>
+
+              <div class="step-actions">
+                <button class="btn btn-secondary" type="button" id="step2Back">
+                  Voltar
+                </button>
+                <button
+                  class="btn btn-primary"
+                  type="button"
+                  id="step2Continue"
+                >
+                  Continuar
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 3: CONFIRMAR -->
+            <div class="report-step" id="step-3">
+              <h2 class="step-title">Confirmar reporte</h2>
+              <p class="step-desc">Rever as informações antes de enviar.</p>
+
+              <div class="confirm-summary" id="confirmSummary"></div>
+
+              <div class="step-actions">
+                <button class="btn btn-secondary" type="button" id="step3Edit">
+                  Editar
+                </button>
+                <button
+                  class="btn btn-primary"
+                  type="button"
+                  id="submitReportBtn"
+                >
+                  Enviar reporte
+                </button>
+              </div>
+            </div>
+
+            <!-- SUCCESS -->
+            <div class="report-step" id="step-success">
+              <div class="success-block">
+                <div class="success-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <path d="M22 4 12 14.01l-3-3" />
+                  </svg>
+                </div>
+                <h2 class="step-title">Reporte enviado!</h2>
+                <p class="step-desc">
+                  O seu problema foi registado com sucesso.
+                </p>
+                <div class="success-card" id="successCard"></div>
+                <div class="success-actions">
+                  <button
+                    class="btn btn-primary btn-block"
+                    type="button"
+                    id="trackReportBtn"
+                  >
+                    Acompanhar reporte
+                  </button>
+                  <button
+                    class="btn btn-secondary btn-block"
+                    type="button"
+                    id="backHomeBtn"
+                  >
+                    Voltar ao início
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---------- MEUS RELATOS VIEW ---------- -->
+        <section class="view" id="view-reports" data-view="reports">
+          <div class="container">
+            <h1 class="page-title">Meus relatos</h1>
+            <div class="filter-chips" id="reportsFilterChips">
+              <button class="chip active" data-status="all">Todos</button>
+              <button class="chip" data-status="analysis">Em análise</button>
+              <button class="chip" data-status="progress">Em resolução</button>
+              <button class="chip" data-status="resolved">Resolvidos</button>
+            </div>
+            <div class="report-list" id="myReportsList"></div>
+            <div class="empty-state" id="myReportsEmpty" hidden>
+              <p class="empty-title">Ainda não fez nenhum reporte.</p>
+              <p class="empty-desc">
+                Quando reportar um problema, ele aparecerá aqui.
+              </p>
+              <button class="btn btn-primary" data-nav="report">
+                Fazer primeiro reporte
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---------- DETALHES DO RELATO VIEW ---------- -->
+        <section class="view" id="view-detail" data-view="detail">
+          <div class="container">
+            <div class="report-flow-header">
+              <button class="icon-btn" id="detailBackBtn" aria-label="Voltar">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <h1 class="page-title">Detalhes do reporte</h1>
+            </div>
+            <div id="detailContent"></div>
+          </div>
+        </section>
+
+        <!-- ---------- PERFIL VIEW ---------- -->
+        <section class="view" id="view-profile" data-view="profile">
+          <div class="container">
+            <h1 class="page-title">Perfil</h1>
+
+            <div class="profile-header">
+              <div class="profile-avatar" id="profileAvatar">A</div>
+              <div class="profile-name-block">
+                <h2 class="profile-name" id="profileName">Abubacar</h2>
+                <p class="profile-location" id="profileLocationLabel"></p>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="editProfileBtn">
+                Editar
+              </button>
+            </div>
+
+            <div class="section-block">
+              <h2 class="section-title">A sua actividade</h2>
+              <div class="metrics-grid" id="profileMetrics"></div>
+            </div>
+
+            <div class="section-block">
+              <h2 class="section-title">Informação</h2>
+              <div class="info-list" id="profileInfoList"></div>
+            </div>
+
+            <div class="section-block">
+              <div class="settings-list">
+                <button class="settings-item" data-action="notifications">
+                  <span>Notificações</span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </button>
+                <button class="settings-item" data-action="privacy">
+                  <span>Privacidade</span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </button>
+                <button class="settings-item" data-action="help">
+                  <span>Ajuda</span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </button>
+                <button
+                  class="settings-item settings-item-danger"
+                  data-action="logout"
+                >
+                  <span>Sair da conta</span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---------- NOTIFICAÇÕES VIEW ---------- -->
+        <section class="view" id="view-notifications" data-view="notifications">
+          <div class="container">
+            <h1 class="page-title">Notificações</h1>
+            <div class="notif-list" id="notifList"></div>
+            <div class="empty-state" id="notifEmpty" hidden>
+              <p class="empty-title">Sem novas notificações.</p>
+              <p class="empty-desc">
+                As actualizações dos seus relatos aparecerão aqui.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- ===== BOTTOM NAVIGATION (mobile) ===== -->
+      <nav class="bottom-nav" id="bottomNav" aria-label="Navegação principal">
+        <button class="bottom-nav-item active" data-view="home">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 11.5 12 4l9 7.5" />
+            <path d="M5 10v10h14V10" />
+          </svg>
+          <span>Início</span>
+        </button>
+        <button class="bottom-nav-item" data-view="map">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4Z" />
+            <path d="M9 4v13" />
+            <path d="M15 6.5v13" />
+          </svg>
+          <span>Mapa</span>
+        </button>
+        <button class="bottom-nav-item bottom-nav-report" data-view="report">
+          <span class="bottom-nav-report-circle">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2.4"
+              stroke-linecap="round"
+            >
+              <path d="M12 5v14" />
+              <path d="M5 12h14" />
+            </svg>
+          </span>
+          <span>Reportar</span>
+        </button>
+        <button class="bottom-nav-item" data-view="reports">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="5" y="4" width="14" height="17" rx="2" />
+            <path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1" />
+            <path d="M9 11h6" />
+            <path d="M9 15h6" />
+          </svg>
+          <span>Relatos</span>
+        </button>
+        <button class="bottom-nav-item" data-view="profile">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6" />
+          </svg>
+          <span>Perfil</span>
+        </button>
+      </nav>
+
+      <!-- ===== MENU LATERAL (hamburger) ===== -->
+      <div class="side-menu-overlay" id="sideMenuOverlay"></div>
+      <aside class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+          <div class="brand brand-menu">
+            <span class="brand-name">SICO</span>
+            <span class="brand-tagline">Sistema de Intervenção Comunitária</span>
+          </div>
+          <button class="icon-btn" id="closeMenuBtn" aria-label="Fechar menu">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <nav class="side-menu-list">
+          <button class="side-menu-item" data-menu-view="profile">
+            Meu perfil
+          </button>
+          <button class="side-menu-item" data-menu-view="notifications">
+            Notificações
+          </button>
+          <button class="side-menu-item" data-menu-view="reports">
+            Meus relatos
+          </button>
+          <button class="side-menu-item" data-action="help">Ajuda</button>
+          <button class="side-menu-item" data-action="settings">
+            Definições
+          </button>
+          <button
+            class="side-menu-item side-menu-item-danger"
+            data-action="logout"
+          >
+            Sair da conta
+          </button>
+        </nav>
+      </aside>
+
+      <!-- ===== FILTER BOTTOM SHEET ===== -->
+      <div class="sheet-overlay" id="filterOverlay"></div>
+      <div class="bottom-sheet" id="filterSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+          <h2 class="sheet-title">Filtrar problemas</h2>
+          <button
+            class="icon-btn"
+            id="closeFilterBtn"
+            aria-label="Fechar filtros"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="sheet-body">
+          <div class="filter-group">
+            <h3 class="filter-group-title">Categoria</h3>
+            <div class="chip-group" id="filterCategoryChips"></div>
+          </div>
+          <div class="filter-group">
+            <h3 class="filter-group-title">Estado</h3>
+            <div class="chip-group" id="filterStatusChips"></div>
+          </div>
+          <div class="filter-group">
+            <h3 class="filter-group-title">Distância</h3>
+            <div class="chip-group" id="filterDistanceChips"></div>
+          </div>
+        </div>
+        <div class="sheet-actions">
+          <button class="btn btn-secondary" id="clearFiltersBtn">
+            Limpar filtros
+          </button>
+          <button class="btn btn-primary" id="applyFiltersBtn">
+            Aplicar filtros
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== MARKER POPUP DETAIL SHEET ===== -->
+      <div class="sheet-overlay" id="markerOverlay"></div>
+      <div class="bottom-sheet bottom-sheet-compact" id="markerSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-body" id="markerSheetBody"></div>
+      </div>
+
+      <!-- ===== TOAST ===== -->
+      <div class="toast" id="toast"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
