@@ -138,7 +138,7 @@ const DEMO_REPORTS = [
       solution: 'Recolha mecanizada e manual dos resíduos, lavagem da zona e encaminhamento para o aterro sanitário.',
       teamNotes: 'Volume estimado de 2,5 m³. Situação recorrente neste ponto; recomendada colocação de contentor adicional.',
       photosBefore: ['assets/reports/lixo-acumulado.svg'],
-      photosAfter: ['assets/reports/lixo-acumulado.svg'],
+      photosAfter: ['assets/reports/lixo-acumulado-corrigido.svg'],
       entity: {
         name: 'Conselho Municipal',
         department: 'Departamento de Limpeza Urbana',
@@ -228,7 +228,7 @@ const DEMO_REPORTS = [
       solution: 'Fresagem localizada, aplicação de nova camada de asfalto e compactação.',
       teamNotes: 'Trabalhos realizados em duas fases para minimizar impacto no trânsito.',
       photosBefore: ['assets/reports/estrada-danificada.svg'],
-      photosAfter: ['assets/reports/estrada-danificada.svg'],
+      photosAfter: ['assets/reports/buraco-estrada-corrigido.svg'],
       entity: {
         name: 'Conselho Municipal',
         department: 'Departamento de Estradas e Pavimentos',
